@@ -14,29 +14,45 @@
 
 int main(void) {
     /* Insert DDR and PORT initializations */
-    DDRA = 0x00; PORTA = 0xFF;
-    DDRC = 0xFF;
-    PORTC = 0x00;
+    DDRA = 0x00; PORTA = 0xFF; 
+    DDRB = 0x00; PORTB = 0xFF; 
+    DDRC = 0x00; PORTC = 0xFF; 
+    DDRD = 0xFF; PORTD = 0x00;
 
-    unsigned char count = 0x00;
     unsigned char tmpA = 0x00;
+    unsigned char tmpB = 0x00;
+    unsigned char tmpC = 0x00;
+    unsigned char tmpD = 0x00;
+    unsigned char totalWeight = 0x00;
+    signed char difference = 0x00;
 
     while(1){
-	    count = 0x00;
-	    tmpA = PINA;
-	    tmpA = tmpA & 0x0F;
-	    unsigned char i = 0;
-	    for(i = 0; i < 4; i++) {
-		if((tmpA & 0x01) == 0x00) {
-			count = count + 1;
-		}
-		tmpA = tmpA >> 1;
-	    }
-	    if(count == 0x00) {
-		PORTC = count | 0x80;
+	    tmpA = PORTA;
+	    tmpB = PORTB;
+	    tmpC = PORTC;
+	    totalWeight = 0x00;
+	    tmpD = 0x00;
+
+	    totalWeight = tmpA + tmpB + tmpC;
+	    
+	    if(tmpA > tmpC) {
+	    	difference = tmpA - tmpC;
 	    } else {
-	    	PORTC = count;
+		difference = tmpC - tmpA;
 	    }
-    }
+
+	    if (totalWeight > 140) {
+		tmpD = tmpD | 0x01;
+	    }
+
+	    totalWeight = totalWeight >> 2;
+
+	    if(difference > 80) {
+		tmpD = tmpD | 0x02;
+	    }
+	    
+	    tmpD = totalWeight | tmpD;
+	    PORTD = tmpD;
+    }    
     return 0;
 }
