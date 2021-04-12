@@ -23,36 +23,37 @@ int main(void) {
     unsigned char tmpB = 0x00;
     unsigned char tmpC = 0x00;
     unsigned char tmpD = 0x00;
+    unsigned char tmpDD = 0x00;
     unsigned char totalWeight = 0x00;
-    signed char difference = 0x00;
+    unsigned char difference = 0x00;
 
     while(1){
-	    tmpA = PORTA;
-	    tmpB = PORTB;
-	    tmpC = PORTC;
+	    tmpA = PINA;
+	    tmpB = PINB;
+	    tmpC = PINC;
 	    totalWeight = 0x00;
 	    tmpD = 0x00;
+	    tmpDD = 0x00;
 
 	    totalWeight = tmpA + tmpB + tmpC;
 	    
-	    if(tmpA > tmpC) {
-	    	difference = tmpA - tmpC;
+	    if(totalWeight > 0x008C) {
+		    tmpD = 0x01;
 	    } else {
-		difference = tmpC - tmpA;
+		    tmpD = 0x00;
 	    }
 
-	    if (totalWeight > 140) {
-		tmpD = tmpD | 0x01;
+	    if(tmpA > tmpC) {
+		    if(tmpA - tmpC > 0x50) {
+			tmpDD = 0x02;	    
+		    }
+	    } else {
+		    if(tmpC - tmpA > 0x50) {
+			tmpDD = 0x02;
+		    }
 	    }
-
-	    totalWeight = totalWeight >> 2;
-
-	    if(difference > 80) {
-		tmpD = tmpD | 0x02;
-	    }
-	    
-	    tmpD = totalWeight | tmpD;
-	    PORTD = tmpD;
+	    difference = (totalWeight & 0x00FC) | tmpD | tmpDD;
+	    PORTD = difference;
     }    
     return 0;
 }
